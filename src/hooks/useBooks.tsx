@@ -26,7 +26,7 @@ function useBooks(){
         }finally{
             setLoading(false);
         }
-    },[searchTerm])
+    },[])
 
     useEffect(()=>{
          const url = searchTerm ? `https://gutendex.com/books?search=${searchTerm}`:"https://gutendex.com/books/"
