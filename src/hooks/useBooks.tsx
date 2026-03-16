@@ -1,4 +1,4 @@
-import { useState , useEffect, useMemo} from "react";
+import { useState , useEffect, useMemo, useCallback} from "react";
 import { BookPage } from "../types";
 
 function useBooks(){
@@ -8,30 +8,30 @@ function useBooks(){
     const [filter, setFilter] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
 
-    useEffect(()=>{
-        const fetchBooks = async ()=>{
-            const url = searchTerm ? `https://gutendex.com/books?search=${searchTerm}`:"https://gutendex.com/books/"
-            try{
-                setLoading(true);
-                const response = await fetch(url);
-                if(!response.ok) throw new Error(`Network had issues ${response.statusText}`);
-                const data = await response.json();
-                setBookPage(data);
-            }catch(e:unknown){
-                if(e instanceof Error){
-                    setError(e.message);
-                }else if(typeof e === "string"){
-                    setError(e);
-                }else{
-                    setError("something went wrong")
-                }
-            }finally{
-                setLoading(false);
+    const fetchBooks = useCallback(async (url:string)=>{
+        try{
+            setLoading(true);
+            const response = await fetch(url);
+            if(!response.ok) throw new Error(`Network had issues ${response.statusText}`);
+            const data = await response.json();
+            setBookPage(data);
+        }catch(e:unknown){
+            if(e instanceof Error){
+                setError(e.message);
+            }else if(typeof e === "string"){
+                setError(e);
+            }else{
+                setError("something went wrong")
             }
+        }finally{
+            setLoading(false);
         }
+    },[searchTerm])
 
+    useEffect(()=>{
+         const url = searchTerm ? `https://gutendex.com/books?search=${searchTerm}`:"https://gutendex.com/books/"
         const debounceFetch = setTimeout(()=>{
-            fetchBooks();
+            fetchBooks(url);
         },500)
         return ()=>{ clearTimeout(debounceFetch) }
     },[searchTerm]);
@@ -54,44 +54,12 @@ function useBooks(){
 
     const next = async()=>{
         if(!bookPage?.next) return;
-        try{
-            setLoading(true);
-            const response = await fetch(bookPage.next);
-            if(!response.ok) throw new Error(`Network problems ${response.status}`);
-            const data = await response.json();
-            setBookPage(data);
-        }catch(e:unknown){
-            if(e instanceof Error){
-                setError(e.message);
-            }else if(typeof e === "string"){
-                setError(e);
-            }else{
-                setError("something went wrong")
-            }
-        }finally{
-            setLoading(false);
-        }
+        fetchBooks(bookPage.next);
     }
 
     const prev = async()=>{
         if(!bookPage?.next) return;
-        try{
-            setLoading(true);
-            const response = await fetch(bookPage.previous);
-            if(!response.ok) throw new Error(`Network problems ${response.status}`);
-            const data = await response.json();
-            setBookPage(data);
-        }catch(e:unknown){
-            if(e instanceof Error){
-                setError(e.message);
-            }else if(typeof e === "string"){
-                setError(e);
-            }else{
-                setError("something went wrong")
-            }
-        }finally{
-            setLoading(false);
-        }
+        fetchBooks(bookPage.previous);
     }
 
     return {

@@ -7,7 +7,7 @@ interface BookListProps {
 
 function BookList({books}:BookListProps){
     return(
-        <ul>
+        <ul className="no-style">
            {
             books.map((book:Book)=>{
                 return <BookDisplay key={book.id} book={book}/>
