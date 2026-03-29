@@ -5,7 +5,6 @@ function useBooks(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [bookPage, setBookPage] = useState<BookPage | null>(null);
-    const [filter, setFilter] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
 
     const fetchBooks = useCallback(async (url:string)=>{
@@ -36,21 +35,12 @@ function useBooks(){
         return ()=>{ clearTimeout(debounceFetch) }
     },[searchTerm]);
 
-    const sortByTitle = useMemo(()=>{
+    const sortedBookList = useMemo(()=>{
         if(!bookPage) return [];
         return [...bookPage.results].sort((a,b)=>{
             return a.title.localeCompare(b.title);
         })
     },[bookPage])
-
-    const filteredBookList = useMemo(()=>{
-        if(!filter) return sortByTitle;
-        return sortByTitle.filter((book)=>{
-            return book.authors.some((author)=>{
-                return author.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase());
-            })
-        })
-    }, [sortByTitle, filter]);
 
     const next = async()=>{
         if(!bookPage?.next) return;
@@ -66,9 +56,7 @@ function useBooks(){
         loading,
         error,
         bookPage,
-        filteredBookList,
-        filter,
-        setFilter,
+        sortedBookList,
         searchTerm,
         setSearchTerm,
         next,

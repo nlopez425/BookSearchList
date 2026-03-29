@@ -1,20 +1,29 @@
+import { useState, useMemo } from 'react';
 import useBooks from './hooks/useBooks';
 import BookList from './components/BookList';
 import './App.css'
 
 function App() {
+  const [filter, setFilter] = useState("");
   const {
     loading,
     error,
     bookPage,
-    filteredBookList,
-    filter,
-    setFilter,
+    sortedBookList,
     searchTerm,
     setSearchTerm,
     next,
     prev
   } = useBooks();
+
+  const filteredBookList = useMemo(() => {
+    if (!filter) return sortedBookList;
+    return sortedBookList.filter((book) => {
+      return book.authors.some((author) => {
+        return author.name.toLowerCase().includes(filter.toLowerCase());
+      });
+    });
+  }, [sortedBookList, filter]);
 
   if(loading){
     return(

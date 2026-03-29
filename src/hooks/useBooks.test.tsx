@@ -115,112 +115,11 @@ describe("useBooks", ()=>{
             vi.advanceTimersByTime(500);
 
             await waitFor(()=>{
-                const {filteredBookList} = result.current;
-                expect(filteredBookList.length).toBe(3);
-                expect(filteredBookList[0].title).toBe("apple");
-                expect(filteredBookList[1].title).toBe("bannana")
-                expect(filteredBookList[2].title).toBe("test")
-            })
-
-            vi.useRealTimers();
-        })
-    })
-
-    describe("Filter", ()=>{
-        it("should filter books by author name", async()=>{
-            vi.useFakeTimers({shouldAdvanceTime:true});
-            const mockValue = {
-                results:[
-                    {id:1, title:"test", authors:[{name:"allen"}]}, 
-                    {id:2, title:"apple", authors:[{name:"bob"}]}, 
-                    {id:3,title:"bannana", authors:[{name:"candy"}]}]
-            }
-            fetch.mockResolvedValue({
-                ok:true,
-                json: async () => mockValue
-            });
-
-            const { result } = renderHook(() => useBooks());
-            const { setFilter } = result.current;
-
-            act(()=>{
-                setFilter("allen");
-            })
-            
-
-            await act(async () => {
-                vi.advanceTimersByTime(500);
-            });
-            
-
-            await waitFor(()=>{
-                const {filteredBookList} = result.current;
-                expect(filteredBookList.length).toBe(1);
-                expect(filteredBookList[0].title).toBe("test");
-            })
-
-            vi.useRealTimers();
-        })
-
-        it("should filter books by a partial match on author", async()=>{
-            vi.useFakeTimers({shouldAdvanceTime:true});
-            const mockValue = {
-                results:[
-                    {id:1, title:"test", authors:[{name:"allen"}]}, 
-                    {id:2, title:"apple", authors:[{name:"bob"}]}, 
-                    {id:3,title:"bannana", authors:[{name:"candy"}]}]
-            }
-            fetch.mockResolvedValue({
-                ok:true,
-                json: async () => mockValue
-            });
-
-            const { result } = renderHook(() => useBooks());
-            const { setFilter } = result.current;
-            act(()=>{
-                setFilter("o");
-            })
-
-            await act(async () => {
-                vi.advanceTimersByTime(500);
-            });
-
-            await waitFor(()=>{
-                const {filteredBookList} = result.current;
-                expect(filteredBookList.length).toBe(1);
-                expect(filteredBookList[0].title).toBe("apple");
-            })
-
-            vi.useRealTimers();
-        })
-
-        it("should not filter books by entering a title name", async()=>{
-            vi.useFakeTimers({shouldAdvanceTime:true});
-            const mockValue = {
-                results:[
-                    {id:1, title:"test", authors:[{name:"allen"}]}, 
-                    {id:2, title:"apple", authors:[{name:"bob"}]}, 
-                    {id:3,title:"bannana", authors:[{name:"candy"}]}]
-            }
-            fetch.mockResolvedValue({
-                ok:true,
-                json: async () => mockValue
-            });
-
-            const { result } = renderHook(() => useBooks());
-            const { setFilter } = result.current;
-
-            act(()=>{
-                setFilter("test");
-            })
-
-            await act(async () => {
-                vi.advanceTimersByTime(500);
-            });
-
-            await waitFor(()=>{
-                const {filteredBookList} = result.current;
-                expect(filteredBookList.length).toBe(0);
+                const {sortedBookList} = result.current;
+                expect(sortedBookList.length).toBe(3);
+                expect(sortedBookList[0].title).toBe("apple");
+                expect(sortedBookList[1].title).toBe("bannana")
+                expect(sortedBookList[2].title).toBe("test")
             })
 
             vi.useRealTimers();
